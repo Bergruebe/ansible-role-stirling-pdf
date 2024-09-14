@@ -1,0 +1,20 @@
+---
+
+- name: Validate and install stirling_pdf if enabled
+  when: stirling_pdf_enabled | bool
+  tags:
+    - setup-all
+    - setup-stirling-pdf
+    - install-all
+    - install-stirling-pdf
+  block:
+    - ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
+    - ansible.builtin.include_tasks: "{{ role_path }}/tasks/install.yml"
+
+- name: Uninstall stirling_pdf if not enabled
+  when: not stirling_pdf_enabled | bool
+  tags:
+    - setup-all
+    - setup-stirling_pdf
+  block:
+    - ansible.builtin.include_tasks: "{{ role_path }}/tasks/uninstall.yml"

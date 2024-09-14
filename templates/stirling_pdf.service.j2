@@ -1,0 +1,52 @@
+[Unit]
+Description=Stirling PDF is a online tool to edit PDFs
+{% for service in stirling_pdf_systemd_required_services_list %}
+Requires={{ service }}
+After={{ service }}
+{% endfor %}
+{% for service in stirling_pdf_systemd_wanted_services_list %}
+Wants={{ service }}
+{% endfor %}
+DefaultDependencies=no
+
+[Service]
+Type=simple
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop --time={{ devture_systemd_docker_base_container_stop_grace_time_seconds }} {{ stirling_pdf_identifier }} 2>/dev/null || true'
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm {{ stirling_pdf_identifier }} 2>/dev/null || true'
+
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
+                --rm \
+                --name={{ stirling_pdf_identifier }} \
+                --log-driver=none \
+                --user={{ stirling_pdf_uid }}:{{ stirling_pdf_gid }} \
+                --cap-drop=ALL \
+                {% if stirling_pdf_container_http_host_bind_port %}
+                -p {{ stirling_pdf_container_http_host_bind_port }}:{{ stirling_pdf_container_http_port }} \
+                {% endif %}
+                --label-file={{ stirling_pdf_config_path }}/labels \
+                --network={{ stirling_pdf_container_network }} \
+                {% for mount in couchdb_container_additional_mounts %}
+                --mount {{ mount }} \
+                {% endfor %}
+                --mount type=bind,src={{ stirling_pdf_config_path }}/config.yml,dst=/config/config.yml \
+                --mount type=bind,src={{ stirling_pdf_logs_path }},dst=/logs \
+                --mount type=bind,src="{{ stirling_pdf_data_path }}/config",dst=/configs \
+                --mount type=bind,src={{ stirling_pdf_trainingData_path }},dst=/usr/share/tessdata \
+                --tmpfs=/tmp:rw,noexec,nosuid,size=100m \
+                --env-file={{ stirling_pdf_env_path }} \
+                {{ stirling_pdf_container_image }}
+
+{% for network in stirling_pdf_container_additional_networks %}
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} {{ stirling_pdf_identifier }}
+{% endfor %}
+
+ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach {{ stirling_pdf_identifier }}
+
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop --time={{ devture_systemd_docker_base_container_stop_grace_time_seconds }} {{ stirling_pdf_identifier }} 2>/dev/null || true'
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm {{ stirling_pdf_identifier }} 2>/dev/null || true'
+Restart=always
+RestartSec=30
+SyslogIdentifier={{ stirling_pdf_identifier }}
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,174 @@
+---
+
+stirling_pdf_enabled: true
+stirling_pdf_identifier: stirling_pdf
+
+stirling_pdf_hostname: ''
+
+# The path at which stirling_pdf is served.
+# This value must either be `/` or not end with a slash (e.g. `/pdf`).
+stirling_pdf_path_prefix: /
+
+stirling_pdf_uid: ''
+stirling_pdf_gid: ''
+
+stirling_pdf_base_path: "/{{ stirling_pdf_identifier }}"
+stirling_pdf_config_path: "{{ stirling_pdf_base_path }}/config"
+stirling_pdf_data_path: "{{ stirling_pdf_base_path }}/data"
+stirling_pdf_trainingData_path: "{{ stirling_pdf_data_path }}/trainingData"
+stirling_pdf_env_path: "{{ stirling_pdf_config_path }}/env"
+stirling_pdf_logs_path: "{{ stirling_pdf_data_path }}/logs"
+
+stirling_pdf_extra_config: ''
+
+# to download calibre onto stirling-pdf enabling pdf to/from book and advanced html conversion
+stirling_pdf_install_calibre: false
+
+stirling_pdf_systemd_required_services_list: "{{ stirling_pdf_systemd_required_services_list_default + stirling_pdf_systemd_required_services_list_auto + stirling_pdf_systemd_required_services_list_custom }}"
+stirling_pdf_systemd_required_services_list_default: ['docker.service']
+stirling_pdf_systemd_required_services_list_auto: []
+stirling_pdf_systemd_required_services_list_custom: []
+
+stirling_pdf_systemd_wanted_services_list: "{{ stirling_pdf_systemd_wanted_services_list_default + stirling_pdf_systemd_wanted_services_list_auto + stirling_pdf_systemd_wanted_services_list_custom }}"
+stirling_pdf_systemd_wanted_services_list_default: []
+stirling_pdf_systemd_wanted_services_list_auto: []
+stirling_pdf_systemd_wanted_services_list_custom: []
+
+couchdb_container_additional_mounts: []
+
+stirling_pdf_version: 0.28.3-fat
+
+# Project source code URL: https://github.com/Stirling-Tools/Stirling-PDF
+stirling_pdf_container_image: "{{ stirling_pdf_container_image_registry_prefix }}frooodle/s-pdf:{{ stirling_pdf_container_image_tag }}"
+stirling_pdf_container_image_registry_prefix: docker.io/
+stirling_pdf_container_image_tag: "{{ stirling_pdf_version }}"
+stirling_pdf_container_image_force_pull: "{{ stirling_pdf_container_image.endswith(':latest') }}"
+
+stirling_pdf_container_network: '{{ stirling_pdf_identifier }}'
+
+stirling_pdf_container_http_port: 8080
+
+# Controls whether the stirling_pdf container exposes its HTTP port (as defined by `stirling_pdf_container_http_port`).
+#
+# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:8731"), or empty string to not expose.
+stirling_pdf_container_http_host_bind_port: ""
+
+# A list of additional container networks that the container would be connected to.
+# The role does not create these networks, so make sure they already exist.
+# Use this to expose this container to a reverse proxy, which runs in a different container network.
+stirling_pdf_container_additional_networks: "{{ stirling_pdf_container_additional_networks_auto + stirling_pdf_container_additional_networks_custom }}"
+stirling_pdf_container_additional_networks_auto: []
+stirling_pdf_container_additional_networks_custom: []
+
+stirling_pdf_locale: 'en_GB'
+
+# Will set GTS_TRUSTED_PROXIES
+# By default this is set to all private IPs (https://datatracker.ietf.org/doc/html/rfc1918#section-3)
+stirling_pdf_trusted_proxies: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
+
+# Additional environment variables to pass to the stirling_pdf container.
+# You can use this to further influence the default configuration.
+#
+# Example:
+# stirling_pdf_environment_variables_extension: |
+#   stirling_pdf_STORAGE_BACKEND=s3
+#   stirling_pdf_STORAGE_S3_ENDPOINT=minio:9000
+#   stirling_pdf_STORAGE_S3_BUCKET=something
+#   stirling_pdf_STORAGE_S3_SECRET_KEY=verysecret
+stirling_pdf_environment_variables_extension: ''
+
+middlewares: []
+
+# stirling_pdf_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
+# See `roles/custom/stirling_pdf_stirling_pdf/templates/labels.j2` for details.
+#
+# To inject your own other container labels, see `stirling_pdf_container_labels_additional_labels`.
+stirling_pdf_container_labels_traefik_enabled: false
+stirling_pdf_container_labels_traefik_docker_network: ""
+stirling_pdf_container_labels_traefik_entrypoints: web-secure
+stirling_pdf_container_labels_traefik_priority: 0
+stirling_pdf_container_labels_traefik_tls: "{{ stirling_pdf_container_labels_traefik_entrypoints != 'web' }}"
+stirling_pdf_container_labels_traefik_tls_certResolver: default  # noqa var-naming
+
+# Controls which additional headers to attach to all HTTP requests.
+# To add your own custom request headers, use `stirling_pdf_container_labels_traefik_additional_response_headers_custom`
+stirling_pdf_container_labels_traefik_additional_request_headers: "{{ stirling_pdf_container_labels_traefik_additional_request_headers_auto | combine(stirling_pdf_container_labels_traefik_additional_request_headers_custom) }}"
+stirling_pdf_container_labels_traefik_additional_request_headers_auto: {}
+stirling_pdf_container_labels_traefik_additional_request_headers_custom: {}
+
+
+# Controls which additional headers to attach to all HTTP responses.
+# To add your own custom response headers, use `stirling_pdf_container_labels_traefik_additional_response_headers_custom`
+stirling_pdf_container_labels_traefik_additional_response_headers: "{{ stirling_pdf_container_labels_traefik_additional_response_headers_auto | combine(stirling_pdf_container_labels_traefik_additional_response_headers_custom) }}"
+stirling_pdf_container_labels_traefik_additional_response_headers_auto: |
+  {{
+    {}
+    | combine ({'X-XSS-Protection': stirling_pdf_http_header_xss_protection} if stirling_pdf_http_header_xss_protection else {})
+    | combine ({'X-Frame-Options': stirling_pdf_http_header_frame_options} if stirling_pdf_http_header_frame_options else {})
+    | combine ({'X-Content-Type-Options': stirling_pdf_http_header_content_type_options} if stirling_pdf_http_header_content_type_options else {})
+    | combine ({'Content-Security-Policy': stirling_pdf_http_header_content_security_policy} if stirling_pdf_http_header_content_security_policy else {})
+    | combine ({'Permission-Policy': stirling_pdf_http_header_content_permission_policy} if stirling_pdf_http_header_content_permission_policy else {})
+    | combine ({'Strict-Transport-Security': stirling_pdf_http_header_strict_transport_security} if stirling_pdf_http_header_strict_transport_security and stirling_pdf_container_labels_traefik_tls else {})
+  }}
+stirling_pdf_container_labels_traefik_additional_response_headers_custom: {}
+
+# Specifies the value of the `X-XSS-Protection` header
+# Stops pages from loading when they detect reflected cross-site scripting (XSS) attacks.
+#
+# Learn more about it is here:
+# - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-XSS-Protection
+# - https://portswigger.net/web-security/cross-site-scripting/reflected
+stirling_pdf_http_header_xss_protection: "1; mode=block"
+
+# Specifies the value of the `X-Frame-Options` header which controls whether framing can happen.
+# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
+stirling_pdf_http_header_frame_options: SAMEORIGIN
+
+# Specifies the value of the `X-Content-Type-Options` header.
+# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options
+stirling_pdf_http_header_content_type_options: nosniff
+
+# Specifies the value of the `Content-Security-Policy` header.
+# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy
+stirling_pdf_http_header_content_security_policy: frame-ancestors 'self'
+
+# Specifies the value of the `Permission-Policy` header.
+# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permission-Policy
+stirling_pdf_http_header_content_permission_policy: "{{ 'interest-cohort=()' if stirling_pdf_floc_optout_enabled else '' }}"
+
+# Specifies the value of the `Strict-Transport-Security` header.
+# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
+stirling_pdf_http_header_strict_transport_security: "max-age=31536000; includeSubDomains{{ '; preload' if stirling_pdf_hsts_preload_enabled else '' }}"
+
+# Controls whether to send a "Permissions-Policy interest-cohort=();" header along with all responses
+#
+# Learn more about what it is here:
+# - https://www.eff.org/deeplinks/2021/03/googles-floc-terrible-idea
+# - https://paramdeo.com/blog/opting-your-website-out-of-googles-floc-network
+# - https://amifloced.org/
+#
+# Of course, a better solution is to just stop using browsers (like Chrome), which participate in such tracking practices.
+# See: `stirling_pdf_content_permission_policy`
+stirling_pdf_floc_optout_enabled: true
+
+# Controls if HSTS preloading is enabled
+#
+# In its strongest and recommended form, the [HSTS policy](https://www.chromium.org/hsts) includes all subdomains, and
+# indicates a willingness to be "preloaded" into browsers:
+# `Strict-Transport-Security: max-age=31536000; includeSubDomains; preload`
+# For more information visit:
+# - https://en.wikipedia.org/wiki/HTTP_Strict_Transport_Security
+# - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
+# - https://hstspreload.org/#opt-in
+# See: `stirling_pdf_http_header_strict_transport_security`
+stirling_pdf_hsts_preload_enabled: false
+
+
+# stirling_pdf_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
+# See `roles/custom/collabora_online/templates/labels.j2` for details.
+#
+# Example:
+# stirling_pdf_container_labels_additional_labels: |
+#   my.label=1
+#   another.label="here"
+stirling_pdf_container_labels_additional_labels: ''
