@@ -28,7 +28,6 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
                 {% for mount in couchdb_container_additional_mounts %}
                 --mount {{ mount }} \
                 {% endfor %}
-                --mount type=bind,src={{ stirling_pdf_config_path }}/config.yml,dst=/config/config.yml \
                 --mount type=bind,src={{ stirling_pdf_logs_path }},dst=/logs \
                 --mount type=bind,src="{{ stirling_pdf_data_path }}/config",dst=/configs \
                 --mount type=bind,src={{ stirling_pdf_trainingData_path }},dst=/usr/share/tessdata \
