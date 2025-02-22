@@ -25,7 +25,7 @@ stirling_pdf_extra_config: ''
 stirling_pdf_install_calibre: false
 
 stirling_pdf_systemd_required_services_list: "{{ stirling_pdf_systemd_required_services_list_default + stirling_pdf_systemd_required_services_list_auto + stirling_pdf_systemd_required_services_list_custom }}"
-stirling_pdf_systemd_required_services_list_default: ['docker.service']
+stirling_pdf_systemd_required_services_list_default: "{{ [devture_systemd_docker_base_docker_service_name] if devture_systemd_docker_base_docker_service_name else [] }}"
 stirling_pdf_systemd_required_services_list_auto: []
 stirling_pdf_systemd_required_services_list_custom: []
 
