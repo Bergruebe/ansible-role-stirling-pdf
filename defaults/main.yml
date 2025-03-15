@@ -36,7 +36,7 @@ stirling_pdf_systemd_wanted_services_list_custom: []
 
 couchdb_container_additional_mounts: []
 
-stirling_pdf_version: 0.42.0-fat
+stirling_pdf_version: 0.44.2-fat
 
 # Project source code URL: https://github.com/Stirling-Tools/Stirling-PDF
 stirling_pdf_container_image: "{{ stirling_pdf_container_image_registry_prefix }}stirlingtools/stirling-pdf:{{ stirling_pdf_container_image_tag }}"
