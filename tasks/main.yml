@@ -15,6 +15,6 @@
   when: not stirling_pdf_enabled | bool
   tags:
     - setup-all
-    - setup-stirling_pdf
+    - setup-stirling-pdf
   block:
     - ansible.builtin.include_tasks: "{{ role_path }}/tasks/uninstall.yml"
