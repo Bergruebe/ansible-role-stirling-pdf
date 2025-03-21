@@ -31,6 +31,7 @@
     - {path: "{{ stirling_pdf_trainingData_path }}", when: true}
     - {path: "{{ stirling_pdf_logs_path }}", when: true}
     - {path: "{{ stirling_pdf_data_path }}/config", when: true}
+    - {path: "{{ stirling_pdf_data_path }}/customFiles", when: true}
 
 
 - name: Ensure stirling_pdf traefik labels are installed
