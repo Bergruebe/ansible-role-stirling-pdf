@@ -31,6 +31,7 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
                 --mount type=bind,src={{ stirling_pdf_logs_path }},dst=/logs \
                 --mount type=bind,src="{{ stirling_pdf_data_path }}/config",dst=/configs \
                 --mount type=bind,src={{ stirling_pdf_trainingData_path }},dst=/usr/share/tessdata \
+                --mount type=bind,src={{ stirling_pdf_data_path }}/customFiles},dst=/customFiles \
                 --tmpfs=/tmp:rw,noexec,nosuid,size=100m \
                 --env-file={{ stirling_pdf_env_path }} \
                 {{ stirling_pdf_container_image }}
