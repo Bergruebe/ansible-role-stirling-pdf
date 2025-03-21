@@ -40,7 +40,7 @@ stirling_pdf_version: 0.44.3-fat
 
 # Project source code URL: https://github.com/Stirling-Tools/Stirling-PDF
 stirling_pdf_container_image: "{{ stirling_pdf_container_image_registry_prefix }}stirlingtools/stirling-pdf:{{ stirling_pdf_container_image_tag }}"
-stirling_pdf_container_image_registry_prefix: docker.io/
+stirling_pdf_container_image_registry_prefix: docker.stirlingpdf.com/
 stirling_pdf_container_image_tag: "{{ stirling_pdf_version }}"
 stirling_pdf_container_image_force_pull: "{{ stirling_pdf_container_image.endswith(':latest') }}"
 
