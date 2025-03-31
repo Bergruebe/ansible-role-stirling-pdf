@@ -20,16 +20,16 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
                 --log-driver=none \
                 --user={{ stirling_pdf_uid }}:{{ stirling_pdf_gid }} \
                 --cap-drop=ALL \
-                {% if stirling_pdf_container_http_host_bind_port %}
+{% if stirling_pdf_container_http_host_bind_port %}
                 -p {{ stirling_pdf_container_http_host_bind_port }}:{{ stirling_pdf_container_http_port }} \
-                {% endif %}
+{% endif %}
                 --label-file={{ stirling_pdf_config_path }}/labels \
                 --network={{ stirling_pdf_container_network }} \
-                {% for mount in couchdb_container_additional_mounts %}
+{% for mount in couchdb_container_additional_mounts %}
                 --mount {{ mount }} \
-                {% endfor %}
+{% endfor %}
                 --mount type=bind,src={{ stirling_pdf_logs_path }},dst=/logs \
-                --mount type=bind,src="{{ stirling_pdf_data_path }}/config",dst=/configs \
+                --mount type=bind,src={{ stirling_pdf_data_path }}/config,dst=/configs \
                 --mount type=bind,src={{ stirling_pdf_trainingData_path }},dst=/usr/share/tessdata \
                 --mount type=bind,src={{ stirling_pdf_data_path }}/customFiles,dst=/customFiles \
                 --tmpfs=/tmp:rw,noexec,nosuid,size=100m \
