@@ -19,6 +19,9 @@ stirling_pdf_trainingData_path: "{{ stirling_pdf_data_path }}/trainingData"
 stirling_pdf_env_path: "{{ stirling_pdf_config_path }}/env"
 stirling_pdf_logs_path: "{{ stirling_pdf_data_path }}/logs"
 
+# temporary folder used for processing - large pdfs may require larger space
+stirling_pdf_container_tmpfs_size: "100m"
+
 stirling_pdf_extra_config: ''
 
 # to download calibre onto stirling-pdf enabling pdf to/from book and advanced html conversion
