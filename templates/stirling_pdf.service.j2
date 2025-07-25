@@ -25,7 +25,7 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 {% endif %}
                 --label-file={{ stirling_pdf_config_path }}/labels \
                 --network={{ stirling_pdf_container_network }} \
-{% for mount in couchdb_container_additional_mounts %}
+{% for mount in stirling_pdf_container_additional_mounts %}
                 --mount {{ mount }} \
 {% endfor %}
                 --mount type=bind,src={{ stirling_pdf_logs_path }},dst=/logs \
