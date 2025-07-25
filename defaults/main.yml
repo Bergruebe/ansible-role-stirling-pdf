@@ -37,7 +37,7 @@ stirling_pdf_systemd_wanted_services_list_default: []
 stirling_pdf_systemd_wanted_services_list_auto: []
 stirling_pdf_systemd_wanted_services_list_custom: []
 
-couchdb_container_additional_mounts: []
+stirling_pdf_container_additional_mounts: []
 
 stirling_pdf_version: 0.46.2-fat
 
