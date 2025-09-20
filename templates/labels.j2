@@ -5,14 +5,14 @@ traefik.docker.network={{ stirling_pdf_container_labels_traefik_docker_network }
 
 {% set middlewares = [] %}
 
-{% if stirling_pdf_container_labels_traefik_path_prefix != '/' %}
-traefik.http.middlewares.{{ stirling_pdf_identifier }}-slashless-redirect.redirectregex.regex=({{ stirling_pdf_container_labels_traefik_path_prefix | quote }})$
+{% if stirling_pdf_path_prefix != '/' %}
+traefik.http.middlewares.{{ stirling_pdf_identifier }}-slashless-redirect.redirectregex.regex=({{ stirling_pdf_path_prefix | quote }})$
 traefik.http.middlewares.{{ stirling_pdf_identifier }}-slashless-redirect.redirectregex.replacement=${1}/
 {% set middlewares = middlewares + [stirling_pdf_identifier + '-slashless-redirect'] %}
 {% endif %}
 
-{% if stirling_pdf_container_labels_traefik_path_prefix != '/' %}
-traefik.http.middlewares.{{ stirling_pdf_identifier }}-strip-prefix.stripprefix.prefixes={{ stirling_pdf_container_labels_traefik_path_prefix }}
+{% if stirling_pdf_path_prefix != '/' %}
+traefik.http.middlewares.{{ stirling_pdf_identifier }}-strip-prefix.stripprefix.prefixes={{ stirling_pdf_path_prefix }}
 {% set middlewares = middlewares + [stirling_pdf_identifier + '-strip-prefix'] %}
 {% endif %}
 
